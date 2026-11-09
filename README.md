@@ -29,7 +29,8 @@ Tudo roda no navegador. O PDF e as notas dos alunos **não são enviados para ne
 ## Para desenvolvedores
 
 - `src/app.body.html`: código-fonte (interface, leitura do PDF, geração do Excel e do PDF).
-- `node build.js`: gera o `index.html` final a partir do código-fonte.
+- `node build.js`: gera o `index.html` final a partir do código-fonte (inclui as etiquetas de compartilhamento).
+- `og-image.png`: imagem que aparece ao compartilhar o link (1200×630).
 - Bibliotecas (via cdnjs): pdf.js 3.11.174, ExcelJS 4.4.0, pdf-lib 1.17.1.
 
 ## Autor
