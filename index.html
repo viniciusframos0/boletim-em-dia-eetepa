@@ -1,0 +1,995 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Boletim em Dia · EETEPA</title>
+</head>
+<body>
+<style>
+:root{
+  --bg:#f4f6f3; --card:#ffffff; --ink:#1d2a24; --muted:#5d6b64; --line:#dde3de;
+  --brand:#1f6f4a; --brand-ink:#ffffff; --brand-soft:#e3f1e9; --accent:#c8553d;
+  --warn-bg:#fff6e0; --warn-line:#e9c46a; --warn-ink:#6b4e00;
+  --bad-bg:#fbe4e1; --bad-ink:#8a2b1d; --ok-bg:#e3f1e9;
+  --radius:12px;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif}
+.wrap{max-width:1100px;margin:0 auto;padding:24px 16px 40px}
+header.top{display:flex;align-items:center;gap:14px;margin-bottom:18px;flex-wrap:wrap}
+.logo{width:44px;height:44px;border-radius:12px;background:var(--brand);color:#fff;display:grid;place-items:center;font-weight:800;font-size:18px}
+header.top h1{font-size:22px;margin:0;line-height:1.2}
+header.top p{margin:2px 0 0;color:var(--muted);font-size:14px}
+.steps{display:flex;gap:8px;margin:0 0 18px;padding:0;list-style:none;flex-wrap:wrap}
+.steps li{padding:6px 12px;border-radius:999px;background:#e8ece9;color:var(--muted);font-size:13px;font-weight:600}
+.steps li.on{background:var(--brand);color:#fff}
+.steps li.done{background:var(--brand-soft);color:var(--brand)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:20px;margin-bottom:16px}
+.card h2{font-size:17px;margin:0 0 4px}
+.card .sub{color:var(--muted);font-size:14px;margin:0 0 14px}
+.drop{border:2px dashed #a9c4b4;border-radius:var(--radius);padding:40px 16px;text-align:center;background:#fafcfa;cursor:pointer;transition:.15s}
+.drop:hover,.drop.over{background:var(--brand-soft);border-color:var(--brand)}
+.drop strong{display:block;font-size:17px;margin-bottom:4px}
+.drop span{color:var(--muted);font-size:14px}
+.privacy{display:flex;gap:10px;align-items:flex-start;margin-top:14px;font-size:13px;color:var(--muted)}
+.privacy b{color:var(--ink)}
+.btn{appearance:none;border:1px solid var(--line);background:#fff;color:var(--ink);padding:10px 16px;border-radius:10px;font:inherit;font-weight:600;cursor:pointer}
+.btn:hover{border-color:#b9c4bd}
+.btn.primary{background:var(--brand);border-color:var(--brand);color:#fff}
+.btn.primary:hover{filter:brightness(1.08)}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.bar{height:10px;background:#e8ece9;border-radius:99px;overflow:hidden;margin:12px 0 6px}
+.bar>div{height:100%;width:0;background:var(--brand);transition:width .15s}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:14px}
+.stat{background:#f7f9f7;border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.stat b{display:block;font-size:22px}
+.stat span{font-size:13px;color:var(--muted)}
+.banner{border-radius:10px;padding:12px 14px;margin-bottom:12px;font-size:14px}
+.banner.warn{background:var(--warn-bg);border:1px solid var(--warn-line);color:var(--warn-ink)}
+.banner.ok{background:var(--ok-bg);border:1px solid #b6dcc6;color:var(--brand)}
+.banner ul{margin:6px 0 0 18px;padding:0}
+.tablewrap{overflow:auto;border:1px solid var(--line);border-radius:10px;max-height:460px}
+table.t{border-collapse:collapse;width:100%;font-size:13px}
+table.t th,table.t td{border-bottom:1px solid var(--line);padding:6px 8px;text-align:left;white-space:nowrap}
+table.t th{background:#eef2ef;position:sticky;top:0;z-index:1;font-weight:700}
+table.t td.n,table.t th.n{text-align:center}
+.badge{display:inline-block;font-size:11px;font-weight:700;padding:2px 8px;border-radius:99px;margin-right:4px}
+.badge.w{background:var(--warn-bg);color:var(--warn-ink);border:1px solid var(--warn-line)}
+.badge.b{background:var(--bad-bg);color:var(--bad-ink)}
+.badge.g{background:var(--brand-soft);color:var(--brand)}
+.picker{border-top:1px solid var(--line);padding-top:16px;margin-top:16px}
+.picker:first-of-type{border-top:0;margin-top:0;padding-top:0}
+.picker h3{font-size:15px;margin:0 0 2px}
+.picker .sub{margin-bottom:10px}
+.presets{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:8px;margin-bottom:10px}
+.preset{text-align:left;border:1.5px solid var(--line);background:#fff;border-radius:10px;padding:10px 12px;cursor:pointer;font:inherit;color:inherit}
+.preset b{display:block;font-size:14px}
+.preset span{display:block;font-size:12.5px;color:var(--muted);line-height:1.35;margin-top:2px}
+.preset.on{border-color:var(--brand);background:var(--brand-soft)}
+.pills{display:flex;flex-wrap:wrap;gap:6px}
+.pillgroup{margin-bottom:8px}
+.pillgroup>small{display:block;font-size:12px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.03em;margin:4px 0 4px}
+.pill{border:1.5px solid var(--line);background:#fff;border-radius:99px;padding:5px 12px;font:inherit;font-size:13px;cursor:pointer;color:var(--ink)}
+.pill.on{background:var(--brand);border-color:var(--brand);color:#fff}
+.pill.quick{border-style:dashed;color:var(--brand);font-weight:600}
+.pill.quick.on{background:var(--brand-soft);color:var(--brand);border-style:solid;border-color:var(--brand)}
+.pill .dim{opacity:.7;font-size:11.5px}
+.fields{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+label.f{display:block;font-size:13px;font-weight:600}
+label.f input[type=text],label.f input[type=number]{display:block;width:100%;margin-top:4px;padding:9px 10px;border:1px solid var(--line);border-radius:8px;font:inherit}
+label.chk{display:flex;gap:8px;align-items:flex-start;font-size:14px;margin:6px 0;cursor:pointer}
+label.chk input{margin-top:4px}
+.empty{background:var(--warn-bg);border:1px solid var(--warn-line);color:var(--warn-ink);padding:10px 12px;border-radius:10px;font-size:14px;margin-top:10px}
+.preview table.t td.low{background:var(--bad-bg);color:var(--bad-ink);font-weight:700}
+.preview table.t th.grp{text-align:center;border-left:1px solid var(--line)}
+.preview table.t td.c{text-align:center}
+.exportbar{position:sticky;bottom:0;background:var(--card);border-top:1px solid var(--line);padding:12px 0 0;margin-top:14px}
+.hidden{display:none!important}
+footer.credits{margin-top:28px;padding-top:12px;border-top:1px solid var(--line);color:var(--muted);font-size:12px;text-align:center}
+@media (max-width:600px){.card{padding:14px}header.top h1{font-size:19px}}
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div class="logo">B</div>
+    <div>
+      <h1>Boletim em Dia · EETEPA</h1>
+      <p>Transforma o boletim da turma exportado do PROESC numa planilha de acompanhamento e num relatório para imprimir.</p>
+    </div>
+  </header>
+
+  <ol class="steps" id="steps">
+    <li data-s="1" class="on">1. Enviar PDF</li>
+    <li data-s="2">2. Conferir alunos</li>
+    <li data-s="3">3. Montar relatório</li>
+  </ol>
+
+  <!-- PASSO 1 -->
+  <section id="s1" class="card">
+    <h2>Envie o boletim da turma (PDF do PROESC)</h2>
+    <p class="sub">No PROESC: Relatórios → Boletim de avaliações da turma → imprimir/salvar como PDF.</p>
+    <label class="drop" id="drop">
+      <input type="file" id="file" accept="application/pdf,.pdf" hidden>
+      <strong>Clique para escolher o PDF ou arraste-o para cá</strong>
+      <span>Um arquivo por turma</span>
+    </label>
+    <div id="progress" class="hidden">
+      <div class="bar"><div id="barfill"></div></div>
+      <small id="progtxt">Lendo…</small>
+    </div>
+    <div id="err" class="banner warn hidden"></div>
+    <div class="privacy"><span>🔒</span><div><b>Nada é enviado para a internet.</b> O PDF é lido no seu próprio navegador e as notas dos alunos não saem do seu computador.</div></div>
+  </section>
+
+  <!-- PASSO 2 -->
+  <section id="s2" class="card hidden">
+    <h2>Confira o que foi lido</h2>
+    <p class="sub" id="turmaInfo"></p>
+    <div class="stats" id="stats"></div>
+    <div id="skipBanner"></div>
+    <div class="tablewrap"><table class="t" id="confTable"></table></div>
+    <div class="row" style="margin-top:14px">
+      <button class="btn" data-go="1">← Trocar arquivo</button>
+      <button class="btn primary" data-go="3">Está certo, continuar →</button>
+    </div>
+  </section>
+
+  <!-- PASSO 3 -->
+  <section id="s3" class="card hidden">
+    <h2>Monte o relatório</h2>
+    <p class="sub">Escolha um modelo pronto ou ajuste tocando nos botões. A prévia embaixo mostra como vai ficar.</p>
+
+    <div class="picker">
+      <h3>Dados gerais</h3>
+      <div class="fields">
+        <label class="f">Nome da escola (aparece no cabeçalho)
+          <input type="text" id="escola" placeholder="Ex.: EETEPA ...">
+        </label>
+        <label class="f">Média para aprovação
+          <input type="number" id="media" min="0" max="10" step="0.5" value="7">
+        </label>
+      </div>
+    </div>
+
+    <div class="picker">
+      <h3>Quais avaliações entram?</h3>
+      <p class="sub">Colunas do boletim do PROESC.</p>
+      <div class="presets" id="evPresets"></div>
+      <div id="evPills"></div>
+      <div id="evEmpty" class="empty hidden">Escolha pelo menos uma avaliação para montar o relatório.</div>
+    </div>
+
+    <div class="picker">
+      <h3>Quais disciplinas entram?</h3>
+      <div class="presets" id="sbPresets"></div>
+      <div id="sbPills"></div>
+      <div id="sbEmpty" class="empty hidden">Escolha pelo menos uma disciplina para montar o relatório.</div>
+    </div>
+
+    <div class="picker">
+      <h3>Colunas extras por aluno (no final da linha)</h3>
+      <div class="pills" id="exPills"></div>
+    </div>
+
+    <div class="picker">
+      <h3>Alunos e resumo</h3>
+      <label class="chk"><input type="checkbox" id="incParcial" checked><span id="incParcialTxt">Incluir alunos que cursam só algumas disciplinas</span></label>
+      <label class="chk"><input type="checkbox" id="resumo"><span>Incluir linhas de resumo da turma (média da turma e quantos ficaram abaixo da média em cada coluna)</span></label>
+    </div>
+
+    <div class="picker preview">
+      <h3>Prévia</h3>
+      <p class="sub">Notas abaixo da média ficam destacadas em vermelho claro.</p>
+      <div class="tablewrap" id="prev"></div>
+    </div>
+
+    <div class="exportbar">
+      <div class="row">
+        <button class="btn" data-go="2">← Voltar</button>
+        <button class="btn primary" id="bXlsx">Baixar planilha (Excel)</button>
+        <button class="btn primary" id="bPdf">Baixar relatório (PDF)</button>
+        <small id="expMsg" style="color:var(--muted)"></small>
+      </div>
+    </div>
+  </section>
+
+  <footer class="credits" id="credits"></footer>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
+
+<script>
+/* ===== CORE START (sem DOM; testável) ===== */
+var CREDITO = { nome: 'Vinicius Ramos', email: 'vinicius.ramos@docente.sectet.pa.gov.br' };
+
+function normTxt(s){ return String(s||'').replace(/\s+/g,' ').trim(); }
+function parseNum(s){
+  s = normTxt(s);
+  if (s === '' || s === '-' || s === '—' || s === '–') return null;
+  if (/^-?\d+(,\d+)?$/.test(s)) return parseFloat(s.replace(',', '.'));
+  if (/^-?\d+\.\d+$/.test(s)) return parseFloat(s);
+  return undefined; // não numérico
+}
+
+// pages: [{height, items:[{str,x,y,w,size}]}] — y = linha de base (origem embaixo, como no PDF)
+function parseProesc(pages){
+  var stream = [];
+  pages.forEach(function(p, pi){
+    p.items.forEach(function(it){
+      if (!it.str || !it.str.trim()) return;
+      var base = p.height - it.y;
+      // cabeçalho/rodapé do navegador (data/hora, "Relatório", URL, nº da página)
+      if (it.size >= 7.5 && (base < 45 || base > p.height - 30)) return;
+      stream.push({ str: it.str, x: it.x, x1: it.x + it.w, size: it.size, b: pi * 2000 + base, page: pi + 1 });
+    });
+  });
+  stream.sort(function(a, c){ return a.b - c.b || a.x - c.x; });
+
+  // agrupar em linhas
+  var lines = [];
+  stream.forEach(function(it){
+    var L = lines.length ? lines[lines.length - 1] : null;
+    if (L && Math.abs(L.b - it.b) <= 1.2) L.items.push(it); else lines.push({ b: it.b, items: [it] });
+  });
+  lines.forEach(function(L){
+    L.items.sort(function(a, c){ return a.x - c.x; });
+    var t = '';
+    L.items.forEach(function(it, i){
+      if (i > 0){ var prev = L.items[i - 1]; if (it.x - prev.x1 > it.size * 0.2 && !/\s$/.test(t)) t += ' '; }
+      t += it.str;
+    });
+    L.text = normTxt(t); L.page = L.items[0].page;
+  });
+
+  // blocos (um por aluno), iniciados pela linha "BOLETIM ..."
+  var starts = [];
+  lines.forEach(function(L, i){ if (/^BOLETIM\b/i.test(L.text)) starts.push(i); });
+  var students = [], skipped = [], columns = [], colIndex = {}, meta = null;
+
+  starts.forEach(function(si, k){
+    var blockLines = lines.slice(si, k + 1 < starts.length ? starts[k + 1] : lines.length);
+    var blockItems = []; blockLines.forEach(function(L){ blockItems = blockItems.concat(L.items); });
+    var page = blockLines[0].page;
+    var title = blockLines[0].text;
+    if (!meta) meta = parseTitle(title);
+
+    var alunoLine = blockLines.find(function(L){ return /^Aluno:/i.test(L.text); });
+    var nome = null, matricula = null, nasc = null;
+    if (alunoLine){
+      var m = alunoLine.text.match(/^Aluno:\s*(?:(\d+)\s*-\s*)?(.*?)\s*(?:Data de Nasc\.?:\s*(\S*))?$/i);
+      if (m){ matricula = m[1] || null; nome = normTxt(m[2]); nasc = m[3] || null; }
+    }
+    if (!nome){ skipped.push({ page: page, motivo: 'Não encontrei o nome do aluno (linha "Aluno:")' }); return; }
+
+    // cabeçalho da tabela
+    var disc = blockItems.find(function(it){ return normTxt(it.str) === 'Disciplina'; });
+    if (!disc){ skipped.push({ page: page, nome: nome, motivo: 'Não encontrei a tabela de disciplinas' }); return; }
+    var head = blockItems.filter(function(it){ return Math.abs(it.b - disc.b) <= 13 && it.x > disc.x1 + 30; });
+    var cols = buildColumns(head);
+    if (!cols.length){ skipped.push({ page: page, nome: nome, motivo: 'Não reconheci as colunas da tabela' }); return; }
+    var headBottom = Math.max.apply(null, head.map(function(h){ return h.b; }).concat([disc.b]));
+    cols.forEach(function(c){
+      if (!(c.key in colIndex)){ colIndex[c.key] = columns.length; columns.push({ key: c.key, label: c.label, group: c.group, kind: c.kind }); }
+    });
+    var leftLimit = cols[0].lo;
+
+    // rodapé
+    var sitLine = blockLines.find(function(L){ return /Situa[çc][ãa]o atual:/i.test(L.text); });
+    var bodyEnd = sitLine ? sitLine.b - 6 : Infinity;
+    var situacao = null, pctFaltas = null, totalFaltas = null;
+    blockLines.forEach(function(L){
+      var a = L.text.match(/Situa[çc][ãa]o atual:\s*([^]*?)(?:\s+Porcentagem|\s+Total de faltas|$)/i); if (a) situacao = normTxt(a[1]);
+      var p = L.text.match(/carga hor[áa]ria:\s*([\d.,]+)\s*%/i); if (p) pctFaltas = parseFloat(p[1].replace(',', '.'));
+      var t = L.text.match(/Total de faltas:\s*(\S+)/i); if (t){ var v = parseNum(t[1]); totalFaltas = (v === null) ? 0 : v; }
+    });
+
+    // corpo: disciplinas (fonte menor, à esquerda) + professor
+    var body = blockItems.filter(function(it){ return it.b > headBottom + 2 && it.b < bodyEnd; });
+    var left = body.filter(function(it){ return it.x1 <= leftLimit; });
+    var right = body.filter(function(it){ return it.x >= leftLimit - 2; });
+    if (!left.length){
+      skipped.push({ page: page, nome: nome, motivo: 'Aluno sem nenhuma disciplina no boletim' }); return;
+    }
+    var minSize = Math.min.apply(null, left.map(function(it){ return it.size; }));
+    var leftLines = groupLines(left);
+    var rows = [];
+    leftLines.forEach(function(L){
+      var isSubj = L.size <= minSize + 0.3;
+      var last = rows[rows.length - 1];
+      if (isSubj){
+        if (last && !last.prof && L.b - last.lastB < 7) { last.nome += ' ' + L.text; last.lastB = L.b; }
+        else rows.push({ nome: L.text, prof: '', b: L.b, lastB: L.b });
+      } else if (last){ last.prof = normTxt((last.prof ? last.prof + ' ' : '') + L.text); }
+    });
+    var notas = {};
+    rows.forEach(function(r, i){
+      var lo = r.b - 3, hi = i + 1 < rows.length ? rows[i + 1].b - 3 : bodyEnd;
+      var vals = {};
+      right.filter(function(it){ return it.b >= lo && it.b < hi; }).forEach(function(it){
+        var v = parseNum(it.str); if (v === undefined) return;
+        var cx = (it.x + it.x1) / 2;
+        var c = cols.find(function(c){ return cx >= c.lo && cx < c.hi; });
+        if (c) vals[c.key] = v;
+      });
+      notas[normTxt(r.nome)] = { prof: r.prof, v: vals };
+    });
+
+    var alertas = [];
+    var tfCol = cols.find(function(c){ return /total\s*faltas/i.test(c.label); });
+    if (tfCol && totalFaltas !== null){
+      var soma = 0; Object.keys(notas).forEach(function(d){ soma += notas[d].v[tfCol.key] || 0; });
+      if (Math.abs(soma - totalFaltas) > 0.01) alertas.push('Soma das faltas por disciplina (' + soma + ') diferente do total impresso (' + totalFaltas + ')');
+    }
+    students.push({ nome: nome, matricula: matricula, nasc: nasc, page: page, situacao: situacao, pctFaltas: pctFaltas, totalFaltas: totalFaltas, disciplinas: notas, alertas: alertas });
+  });
+
+  // ordem das disciplinas: pela primeira aparição (alunos regulares têm a grade completa)
+  var subjects = [], subjMap = {};
+  students.forEach(function(s){
+    Object.keys(s.disciplinas).forEach(function(d){
+      if (!(d in subjMap)){ subjMap[d] = subjects.length; subjects.push({ nome: d, prof: s.disciplinas[d].prof }); }
+    });
+  });
+  var maxD = Math.max.apply(null, [0].concat(students.map(function(s){ return Object.keys(s.disciplinas).length; })));
+  students.forEach(function(s){ s.parcial = Object.keys(s.disciplinas).length < maxD * 0.5; });
+  // coluna "tem dados": algum valor diferente de zero
+  columns.forEach(function(c){
+    c.temDados = students.some(function(s){ return Object.keys(s.disciplinas).some(function(d){ var v = s.disciplinas[d].v[c.key]; return v !== undefined && v !== null && v !== 0; }); });
+  });
+  assignAbbr(subjects);
+  return { meta: meta || {}, students: students, skipped: skipped, columns: columns, subjects: subjects, pages: pages.length };
+}
+
+function groupLines(items){
+  var s = items.slice().sort(function(a, c){ return a.b - c.b || a.x - c.x; });
+  var out = [];
+  s.forEach(function(it){
+    var L = out[out.length - 1];
+    if (L && Math.abs(L.b - it.b) <= 1.2){ L.items.push(it); L.size = Math.max(L.size, it.size); }
+    else out.push({ b: it.b, items: [it], size: it.size });
+  });
+  out.forEach(function(L){ L.text = normTxt(L.items.sort(function(a, c){ return a.x - c.x; }).map(function(i){ return i.str; }).join(' ')); });
+  return out;
+}
+
+function buildColumns(head){
+  if (!head.length) return [];
+  var top = Math.min.apply(null, head.map(function(h){ return h.b; }));
+  var topRow = head.filter(function(h){ return h.b - top <= 1.5; });
+  var rest = head.filter(function(h){ return h.b - top > 1.5; });
+  // agrupar por centro horizontal
+  function cluster(items){
+    var cl = [];
+    items.slice().sort(function(a, c){ return (a.x + a.x1) - (c.x + c.x1); }).forEach(function(it){
+      var cx = (it.x + it.x1) / 2, C = cl[cl.length - 1];
+      if (C && Math.abs(C.cx - cx) <= 12){ C.items.push(it); C.cx = (C.cx * (C.items.length - 1) + cx) / C.items.length; }
+      else cl.push({ cx: cx, items: [it] });
+    });
+    cl.forEach(function(C){ C.minB = Math.min.apply(null, C.items.map(function(i){ return i.b; })); C.label = normTxt(C.items.sort(function(a, c){ return a.b - c.b; }).map(function(i){ return i.str; }).join(' ')); });
+    return cl;
+  }
+  var restCl = cluster(rest);
+  var groups = [], leaves = [];
+  cluster(topRow).forEach(function(T){
+    var below = restCl.filter(function(C){ return Math.abs(C.cx - T.cx) <= 60; });
+    if (below.length >= 2) groups.push(T); else leaves.push(T);
+  });
+  // itens das linhas de baixo que pertencem a colunas iniciadas na linha do topo (ex.: "Média" / "Final")
+  restCl.forEach(function(C){
+    var L = leaves.find(function(l){ return Math.abs(l.cx - C.cx) <= 12; });
+    if (L){ L.items = L.items.concat(C.items); L.label = normTxt(L.items.sort(function(a, c){ return a.b - c.b; }).map(function(i){ return i.str; }).join(' ')); }
+    else leaves.push(C);
+  });
+  leaves.forEach(function(l){ l.minB = Math.min.apply(null, l.items.map(function(i){ return i.b; })); });
+  leaves.sort(function(a, c){ return a.cx - c.cx; });
+  var cols = leaves.map(function(l, i){
+    var g = null;
+    if (l.minB - top > 6){
+      var best = null; groups.forEach(function(G){ var d = Math.abs(G.cx - l.cx); if (d <= 75 && (!best || d < best.d)) best = { d: d, G: G }; });
+      if (best) g = best.G.label;
+    }
+    var prev = leaves[i - 1], next = leaves[i + 1];
+    var lo = prev ? (prev.cx + l.cx) / 2 : l.cx - (next ? (next.cx - l.cx) / 2 : 25);
+    var hi = next ? (next.cx + l.cx) / 2 : l.cx + (prev ? (l.cx - prev.cx) / 2 : 25);
+    return { key: (g ? g + ' · ' : '') + l.label, label: l.label, group: g, kind: /falta/i.test(l.label) ? 'falta' : 'nota', lo: lo, hi: hi };
+  });
+  return cols;
+}
+
+function parseTitle(t){
+  var m = { titulo: t };
+  var a = t.match(/BOLETIM\s+(\d{4}(?:\.\d)?)/i); if (a) m.periodo = a[1];
+  var tu = t.match(/TURMA:\s*(.+)$/i); if (tu){ m.turma = normTxt(tu[1]); m.turmaCod = m.turma.split('-')[0].trim(); }
+  var parts = t.split(/\s+-\s+/);
+  if (parts.length >= 3){ m.curso = normTxt(parts[1]); m.semestre = normTxt(parts[2]); }
+  var y = t.match(/(20\d{2})/); if (y) m.ano = y[1];
+  return m;
+}
+
+var ABBR = { 'ARTE':'ART','ARTES':'ART','LÍNGUA PORTUGUESA':'LÍN POR','EDUCAÇÃO FÍSICA':'EDU FIS','LÍNGUA INGLESA':'LÍN ING','LÍNGUA ESPANHOLA':'LÍN ESP',
+  'MATEMÁTICA':'MAT','BIOLOGIA':'BIO','FÍSICA':'FÍS','QUÍMICA':'QUÍ','FILOSOFIA':'FIL','GEOGRAFIA':'GEO','HISTÓRIA':'HIST','SOCIOLOGIA':'SOC' };
+var AREAS = [
+  { id: 'ling', nome: 'Linguagens', base: true, itens: ['ARTE','ARTES','LÍNGUA PORTUGUESA','EDUCAÇÃO FÍSICA','LÍNGUA INGLESA','LÍNGUA ESPANHOLA','INGLÊS','ESPANHOL','LITERATURA','REDAÇÃO'] },
+  { id: 'mat', nome: 'Matemática', base: true, itens: ['MATEMÁTICA'] },
+  { id: 'nat', nome: 'Ciências da Natureza', base: true, itens: ['FÍSICA','QUÍMICA','BIOLOGIA'] },
+  { id: 'hum', nome: 'Ciências Humanas', base: true, itens: ['HISTÓRIA','GEOGRAFIA','SOCIOLOGIA','FILOSOFIA'] },
+  { id: 'tec', nome: 'Formação técnica e itinerário', base: false, itens: [] }
+];
+function areaOf(nome){
+  var n = nome.toUpperCase();
+  for (var i = 0; i < AREAS.length - 1; i++) if (AREAS[i].itens.indexOf(n) >= 0) return AREAS[i].id;
+  return 'tec';
+}
+function assignAbbr(subjects){
+  var STOP = { DA:1, DE:1, DO:1, DAS:1, DOS:1, E:1, EM:1, A:1, O:1, PARA:1, AO:1 };
+  var used = {};
+  subjects.forEach(function(s){
+    var n = s.nome.toUpperCase(), ab = ABBR[n];
+    if (!ab){
+      var w = n.replace(/[,.;:()]/g, ' ').split(/\s+/).filter(function(x){ return x && !STOP[x]; });
+      ab = w.slice(0, 3).map(function(x){ return /^APLICAD[AO]S?$/.test(x) ? 'APL' : x.slice(0, 3); }).join(' ');
+    }
+    var base = ab, k = 2; while (used[ab]) ab = base + ' ' + (k++);
+    used[ab] = 1; s.abbr = ab; s.area = areaOf(n);
+  });
+}
+
+function shortLabel(col, allCols){
+  var multiGroup = allCols.filter(function(c){ return c.label === col.label; }).length > 1;
+  var L = col.label;
+  var map = { 'Média Semestral': 'Méd Sem', 'Média Final': 'Méd Final', 'Total Faltas': 'Faltas' };
+  if (col.group && /rec/i.test(col.group)) L = (col.kind === 'falta') ? 'Falta Rec' : 'Rec';
+  else if (map[L]) L = map[L];
+  if (multiGroup && col.group && !/rec/i.test(col.group)) L = col.group.replace(/\s+/g, '') + ' ' + L;
+  return L;
+}
+function longLabel(col){ return col.group ? (col.group + ' – ' + col.label) : col.label; }
+
+var EXTRAS = [
+  { id: 'abaixo', label: 'Nº de notas abaixo da média', short: 'Abaixo da média' },
+  { id: 'faltas', label: 'Total de faltas (geral)', short: 'Total faltas' },
+  { id: 'pct', label: '% de faltas', short: '% faltas' },
+  { id: 'sit', label: 'Situação', short: 'Situação' }
+];
+
+// Monta a "grade" final a partir dos dados + escolhas. Usado pela prévia, Excel e PDF.
+function buildGrid(data, opt){
+  var cols = data.columns.filter(function(c){ return opt.cols.indexOf(c.key) >= 0; });
+  var subs = data.subjects.filter(function(s){ return opt.subjects.indexOf(s.nome) >= 0; });
+  var studs = data.students.filter(function(s){ return opt.incParcial || !s.parcial; });
+  var extras = EXTRAS.filter(function(e){ return opt.extras.indexOf(e.id) >= 0; });
+  var media = opt.media;
+  var rows = studs.map(function(s, i){
+    var cells = [], abaixo = 0;
+    subs.forEach(function(sb){
+      var d = s.disciplinas[sb.nome];
+      cols.forEach(function(c){
+        var v = d ? d.v[c.key] : undefined;
+        if (v === undefined) v = null;
+        if (c.kind === 'nota' && !c.temDados) v = null; // ex.: "Média Final 0,0" antes do fechamento = ainda não lançada
+        var low = (c.kind === 'nota' && v !== null && v < media - 1e-9);
+        if (low) abaixo++;
+        cells.push({ v: v, low: low, kind: c.kind, cursa: !!d });
+      });
+    });
+    var ex = extras.map(function(e){
+      if (e.id === 'abaixo') return { v: abaixo, kind: 'int' };
+      if (e.id === 'faltas') return { v: s.totalFaltas, kind: 'int' };
+      if (e.id === 'pct') return { v: s.pctFaltas === null ? null : s.pctFaltas / 100, kind: 'pct' };
+      return { v: s.situacao || '', kind: 'txt' };
+    });
+    return { n: i + 1, nome: s.nome, parcial: s.parcial, cells: cells, extras: ex };
+  });
+  var summary = null;
+  if (opt.resumo){
+    var nC = subs.length * cols.length;
+    var med = [], low = [];
+    for (var j = 0; j < nC; j++){
+      var vals = rows.map(function(r){ return r.cells[j]; }).filter(function(c){ return c.v !== null; });
+      var kind = cols[j % cols.length].kind;
+      if (kind === 'nota' && vals.length){ med.push(vals.reduce(function(a, c){ return a + c.v; }, 0) / vals.length); low.push(vals.filter(function(c){ return c.low; }).length); }
+      else { med.push(kind === 'falta' && vals.length ? vals.reduce(function(a, c){ return a + c.v; }, 0) / vals.length : null); low.push(null); }
+    }
+    summary = { media: med, abaixo: low };
+  }
+  return { cols: cols, subs: subs, rows: rows, extras: extras, media: media, summary: summary, allCols: data.columns };
+}
+
+function fmtNum(v, kind){
+  if (v === null || v === undefined || v === '') return '';
+  if (kind === 'pct') return (v * 100).toFixed(1).replace('.', ',') + '%';
+  if (kind === 'int' || kind === 'falta') return String(Math.round(v * 10) / 10).replace('.', ',');
+  if (kind === 'txt') return String(v);
+  return v.toFixed(1).replace('.', ',');
+}
+function headerLine(data, opt){
+  var m = data.meta;
+  var t = 'Turma ' + (m.turma || '?');
+  if (m.periodo) t += '  |  Boletim ' + m.periodo + (m.semestre ? ' (' + m.semestre.toLowerCase() + ')' : '');
+  if (opt.escola) t += '  |  ' + opt.escola;
+  return t;
+}
+function semAcento(s){ return String(s || '').normalize('NFD').replace(/[\u0300-\u036f]/g, ''); }
+function nomeTurma(meta){
+  // "P2TI01-TÉCNICO EM EDIFICAÇÕES-EMI-2026" -> "Tec-Edificacoes"
+  var t = String(meta.turma || '');
+  if (meta.turmaCod && t.indexOf(meta.turmaCod) === 0) t = t.slice(meta.turmaCod.length);
+  t = semAcento(t).replace(/^[\s-]+/, '').replace(/-\s*(EMI|EM|SUB|CONC|PROEJA)\b.*$/i, '').replace(/[-\s]+\d{2,4}$/, '').trim();
+  var tec = /^TECNICO\s+(EM|DE)\s+/i.test(t);
+  t = t.replace(/^TECNICO\s+(EM|DE)\s+/i, '');
+  var STOP = { DE: 1, DA: 1, DO: 1, DAS: 1, DOS: 1, E: 1, EM: 1 };
+  var w = t.split(/[^A-Za-z0-9]+/).filter(Boolean).filter(function(x){ return !STOP[x.toUpperCase()]; })
+    .map(function(x){ return x.charAt(0).toUpperCase() + x.slice(1).toLowerCase(); });
+  if (!w.length) return semAcento(meta.turmaCod || 'turma').replace(/[^\w-]+/g, '');
+  return (tec ? 'Tec-' : '') + w.join('-');
+}
+function fileBase(data){ return 'acompanhamento-' + nomeTurma(data.meta); }
+
+// ===== Excel =====
+async function buildXlsx(data, opt){
+  var g = buildGrid(data, opt);
+  var wb = new ExcelJS.Workbook();
+  wb.creator = 'Boletim em Dia';
+  var ws = wb.addWorksheet('Acompanhamento', {
+    views: [{ state: 'frozen', xSplit: 1, ySplit: 4 }],
+    pageSetup: { paperSize: 9, orientation: 'landscape', fitToPage: true, fitToWidth: 1, fitToHeight: 1, horizontalCentered: true,
+      margins: { left: 0.25, right: 0.25, top: 0.75, bottom: 0.75, header: 0.3, footer: 0.3 } }
+  });
+  var nCols = 1 + g.subs.length * g.cols.length + g.extras.length;
+  var HEAD = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFE9EEEF' } };
+  var LOW = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFFBE4E1' } };
+  var thin = { style: 'thin', color: { argb: 'FFBFC7C9' } };
+  var BORDER = { top: thin, left: thin, bottom: thin, right: thin };
+
+  ws.getCell(1, 1).value = headerLine(data, opt);
+  ws.getCell(1, 1).font = { bold: true, size: 12 };
+  if (nCols > 1) ws.mergeCells(1, 1, 1, nCols);
+  ws.getCell(2, 1).value = 'Média: ' + fmtNum(g.media, 'nota') + '  •  Em vermelho claro: notas abaixo da média';
+  ws.getCell(2, 1).font = { italic: true, size: 9, color: { argb: 'FF5D6B64' } };
+  if (nCols > 1) ws.mergeCells(2, 1, 2, nCols);
+
+  ws.getCell(3, 1).value = 'Aluno';
+  ws.mergeCells(3, 1, 4, 1);
+  var c = 2;
+  g.subs.forEach(function(s){
+    ws.getCell(3, c).value = s.abbr;
+    if (g.cols.length > 1) ws.mergeCells(3, c, 3, c + g.cols.length - 1);
+    g.cols.forEach(function(col, k){ ws.getCell(4, c + k).value = shortLabel(col, g.allCols); });
+    c += g.cols.length;
+  });
+  g.extras.forEach(function(e){ ws.getCell(3, c).value = e.short; ws.mergeCells(3, c, 4, c); c++; });
+  for (var r = 3; r <= 4; r++) for (var k = 1; k <= nCols; k++){
+    var cell = ws.getCell(r, k);
+    cell.fill = HEAD; cell.font = { bold: true }; cell.border = BORDER;
+    cell.alignment = { horizontal: 'center', vertical: 'middle', wrapText: true };
+  }
+
+  g.rows.forEach(function(row, i){
+    var R = 5 + i;
+    var a = ws.getCell(R, 1); a.value = row.n + '. ' + row.nome; a.border = BORDER;
+    row.cells.forEach(function(cl, j){
+      var cell = ws.getCell(R, 2 + j);
+      cell.value = cl.v; cell.border = BORDER; cell.alignment = { horizontal: 'center' };
+      cell.numFmt = cl.kind === 'falta' ? '0' : '0.0';
+      if (cl.low) cell.fill = LOW;
+      if (!cl.cursa) cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFF2F2F2' } };
+    });
+    row.extras.forEach(function(e, j){
+      var cell = ws.getCell(R, 2 + row.cells.length + j);
+      cell.value = e.v; cell.border = BORDER; cell.alignment = { horizontal: 'center' };
+      if (e.kind === 'pct') cell.numFmt = '0.0%';
+      else if (e.kind === 'int') cell.numFmt = '0';
+    });
+  });
+  if (g.summary){
+    var R0 = 5 + g.rows.length;
+    [['Média da turma', g.summary.media, '0.0'], ['Abaixo da média (qtd.)', g.summary.abaixo, '0']].forEach(function(sr, q){
+      var R = R0 + q;
+      var a = ws.getCell(R, 1); a.value = sr[0]; a.font = { bold: true }; a.fill = HEAD; a.border = BORDER;
+      sr[1].forEach(function(v, j){
+        var cell = ws.getCell(R, 2 + j); cell.value = (v === null ? null : Math.round(v * 10) / 10);
+        cell.numFmt = sr[2]; cell.font = { bold: true }; cell.fill = HEAD; cell.border = BORDER; cell.alignment = { horizontal: 'center' };
+      });
+      for (var e = 0; e < g.extras.length; e++){ var ce = ws.getCell(R, 2 + sr[1].length + e); ce.fill = HEAD; ce.border = BORDER; }
+    });
+  }
+  ws.getColumn(1).width = 34;
+  for (var k2 = 2; k2 <= nCols; k2++) ws.getColumn(k2).width = 10;
+  g.extras.forEach(function(e, j){ if (e.id === 'sit') ws.getColumn(2 + g.subs.length * g.cols.length + j).width = 14; });
+  ws.pageSetup.printTitlesRow = '3:4';
+
+  // legenda
+  var lg = wb.addWorksheet('Legenda', { pageSetup: { paperSize: 9, orientation: 'portrait', fitToPage: true, fitToWidth: 1, fitToHeight: 0,
+      margins: { left: 0.25, right: 0.25, top: 0.75, bottom: 0.75, header: 0.3, footer: 0.3 } } });
+  lg.addRow(['Sigla', 'Disciplina', 'Professor(a)']);
+  lg.getRow(1).font = { bold: true };
+  data.subjects.forEach(function(s){ lg.addRow([s.abbr, s.nome, s.prof]); });
+  lg.addRow([]);
+  lg.addRow(['Coluna', 'Significado']).font = { bold: true };
+  g.cols.forEach(function(col){ lg.addRow([shortLabel(col, g.allCols), longLabel(col)]); });
+  lg.getColumn(1).width = 14; lg.getColumn(2).width = 48; lg.getColumn(3).width = 28;
+  return await wb.xlsx.writeBuffer();
+}
+
+// ===== PDF =====
+function pdfSafe(s){
+  return String(s == null ? '' : s)
+    .replace(/[‘’‚′]/g, "'").replace(/[“”„″]/g, '"')
+    .replace(/[–—−]/g, '-').replace(/…/g, '...').replace(/[•·]/g, '-')
+    .replace(/ /g, ' ').replace(/[^\x20-\x7E¡-ÿ]/g, '');
+}
+async function buildPdf(data, opt){
+  var g = buildGrid(data, opt);
+  var P = PDFLib, doc = await P.PDFDocument.create();
+  var F = await doc.embedFont(P.StandardFonts.Helvetica), FB = await doc.embedFont(P.StandardFonts.HelveticaBold);
+  var W = 841.89, H = 595.28, M = 28;
+  var ink = P.rgb(0.11, 0.16, 0.14), muted = P.rgb(0.36, 0.42, 0.39), line = P.rgb(0.75, 0.78, 0.79);
+  var headFill = P.rgb(0.914, 0.933, 0.937), lowFill = P.rgb(0.984, 0.894, 0.882), lowInk = P.rgb(0.54, 0.17, 0.11), naFill = P.rgb(0.95, 0.95, 0.95);
+  function text(pg, s, x, y, size, font, color){ pg.drawText(pdfSafe(s), { x: x, y: y, size: size, font: font || F, color: color || ink }); }
+  function fit(s, font, size, maxW){
+    s = pdfSafe(s); if (font.widthOfTextAtSize(s, size) <= maxW) return s;
+    while (s.length > 1 && font.widthOfTextAtSize(s + '...', size) > maxW) s = s.slice(0, -1);
+    return s + '...';
+  }
+  function center(pg, s, x, w, y, size, font, color){ s = fit(s, font || F, size, w - 2); var tw = (font || F).widthOfTextAtSize(s, size); text(pg, s, x + (w - tw) / 2, y, size, font, color); }
+
+  // dividir disciplinas em blocos que caibam na largura
+  var nameW = 175, extraW = 46;
+  var avail = W - 2 * M - nameW - g.extras.length * extraW;
+  var minCol = 26, perSub = g.cols.length;
+  var maxSubs = Math.max(1, Math.floor(avail / (minCol * perSub)));
+  var chunks = [];
+  if (g.subs.length <= maxSubs) chunks.push(g.subs.map(function(_, i){ return i; }));
+  else {
+    // por área, juntando áreas enquanto couber
+    var cur = [];
+    AREAS.forEach(function(A){
+      var idx = []; g.subs.forEach(function(s, i){ if (s.area === A.id) idx.push(i); });
+      while (idx.length){
+        if (cur.length && cur.length + Math.min(idx.length, maxSubs) > maxSubs){ chunks.push(cur); cur = []; }
+        var take = idx.splice(0, maxSubs - cur.length); cur = cur.concat(take);
+        if (cur.length >= maxSubs){ chunks.push(cur); cur = []; }
+      }
+    });
+    if (cur.length) chunks.push(cur);
+  }
+  chunks = chunks.filter(function(ch){ return ch.length; });
+
+  var headH = 34;
+  function abbrLines(a, w){ var out = [], cur = ''; a.split(' ').forEach(function(p){ var t = cur ? cur + ' ' + p : p; if (cur && FB.widthOfTextAtSize(pdfSafe(t), 7) > w - 3){ out.push(cur); cur = p; } else cur = t; }); out.push(cur); return out; }
+  var pages = [];
+  chunks.forEach(function(ch, ci){
+    var colW = Math.min(60, avail / (ch.length * perSub));
+    var tableW = nameW + ch.length * perSub * colW + g.extras.length * extraW;
+    var x0 = M + (W - 2 * M - tableW) / 2;
+    var allRows = g.rows.map(function(r){ return { name: r.n + '. ' + r.nome, cells: r.cells, extras: r.extras, kind: 'row' }; });
+    if (g.summary){
+      allRows.push({ name: 'Média da turma', sum: g.summary.media, kind: 'sum', fmt: 'nota' });
+      allRows.push({ name: 'Abaixo da média (qtd.)', sum: g.summary.abaixo, kind: 'sum', fmt: 'int' });
+    }
+    var top = H - M - 44;
+    var room = top - headH - M - 30;
+    var rowH = Math.max(9.5, Math.min(13, room / allRows.length));
+    var perPage = Math.floor(room / rowH);
+    var fs = rowH < 11 ? 7 : 7.5;
+    for (var start = 0; start < allRows.length; start += perPage){
+      var pg = doc.addPage([W, H]); pages.push(pg);
+      text(pg, headerLine(data, opt), M, H - M - 4, 11, FB);
+      var sub = 'Média: ' + fmtNum(g.media, 'nota') + '   |   Em vermelho: notas abaixo da média' + (chunks.length > 1 ? '   |   Parte ' + (ci + 1) + ' de ' + chunks.length : '');
+      text(pg, sub, M, H - M - 20, 8.5, F, muted);
+      var y = top;
+      // cabeçalho
+      pg.drawRectangle({ x: x0, y: y - headH, width: tableW, height: headH, color: headFill, borderColor: line, borderWidth: 0.5 });
+      center(pg, 'Aluno', x0, nameW, y - headH / 2 - 3, 8, FB);
+      var x = x0 + nameW;
+      ch.forEach(function(si){
+        var s = g.subs[si];
+        var w = perSub * colW;
+        pg.drawLine({ start: { x: x, y: y }, end: { x: x, y: y - headH }, thickness: 0.5, color: line });
+        var al = abbrLines(s.abbr, w);
+        if (perSub > 1){
+          center(pg, s.abbr, x, w, y - 11, 7.5, FB);
+          pg.drawLine({ start: { x: x, y: y - 15 }, end: { x: x + w, y: y - 15 }, thickness: 0.5, color: line });
+          g.cols.forEach(function(c, k){ center(pg, shortLabel(c, g.allCols), x + k * colW, colW, y - 27, 6.5, F); });
+        } else {
+          if (al.length > 2){ al.slice(0, 3).forEach(function(t, q){ center(pg, t, x, w, y - 8 - q * 7, 6.5, FB); }); }
+          else if (al.length > 1){ center(pg, al[0], x, w, y - 10, 7, FB); center(pg, al[1], x, w, y - 18, 7, FB); }
+          else center(pg, s.abbr, x, w, y - 14, 7, FB);
+          center(pg, shortLabel(g.cols[0], g.allCols), x, w, y - 29, 6.5, F, muted);
+        }
+        x += w;
+      });
+      g.extras.forEach(function(e){
+        pg.drawLine({ start: { x: x, y: y }, end: { x: x, y: y - headH }, thickness: 0.5, color: line });
+        var words = e.short.split(' ');
+        if (words.length > 1){ center(pg, words[0], x, extraW, y - 12, 7, FB); center(pg, words.slice(1).join(' '), x, extraW, y - 21, 7, FB); }
+        else center(pg, e.short, x, extraW, y - headH / 2 - 3, 7, FB);
+        x += extraW;
+      });
+      y -= headH;
+      var hLines = [];
+      allRows.slice(start, start + perPage).forEach(function(r, ri){
+        var isSum = r.kind === 'sum';
+        if (isSum) pg.drawRectangle({ x: x0, y: y - rowH, width: tableW, height: rowH, color: headFill });
+        else if (ri % 2 === 1) pg.drawRectangle({ x: x0, y: y - rowH, width: tableW, height: rowH, color: P.rgb(0.985, 0.988, 0.985) });
+        var ty = y - rowH + (rowH - fs) / 2 + 1;
+        text(pg, fit(r.name, isSum ? FB : F, fs, nameW - 6), x0 + 4, ty, fs, isSum ? FB : F);
+        var xx = x0 + nameW;
+        ch.forEach(function(si){
+          for (var k = 0; k < perSub; k++){
+            var j = si * perSub + k;
+            if (isSum){
+              var v = r.sum[j];
+              center(pg, v === null ? '' : fmtNum(v, r.fmt === 'int' ? 'int' : 'nota'), xx, colW, ty, fs, FB);
+            } else {
+              var cl = r.cells[j];
+              if (!cl.cursa) pg.drawRectangle({ x: xx, y: y - rowH, width: colW, height: rowH, color: naFill });
+              if (cl.low) pg.drawRectangle({ x: xx, y: y - rowH, width: colW, height: rowH, color: lowFill });
+              center(pg, fmtNum(cl.v, cl.kind), xx, colW, ty, fs, cl.low ? FB : F, cl.low ? lowInk : ink);
+            }
+            xx += colW;
+          }
+        });
+        (r.extras || g.extras.map(function(){ return { v: null }; })).forEach(function(e){
+          center(pg, fmtNum(e.v, e.kind), xx, extraW, ty, fs - 0.5, F); xx += extraW;
+        });
+        hLines.push(y - rowH);
+        y -= rowH;
+      });
+      hLines.forEach(function(hy){ pg.drawLine({ start: { x: x0, y: hy }, end: { x: x0 + tableW, y: hy }, thickness: 0.4, color: line }); });
+      // linhas verticais
+      var bottom = y;
+      pg.drawRectangle({ x: x0, y: bottom, width: tableW, height: top - bottom, borderColor: line, borderWidth: 0.6 });
+      var vx = x0 + nameW;
+      ch.forEach(function(){ for (var k = 0; k < perSub; k++){ pg.drawLine({ start: { x: vx, y: top - (k === 0 ? 0 : 15) }, end: { x: vx, y: bottom }, thickness: k === 0 ? 0.6 : 0.3, color: line }); vx += colW; } });
+      g.extras.forEach(function(){ pg.drawLine({ start: { x: vx, y: top }, end: { x: vx, y: bottom }, thickness: 0.6, color: line }); vx += extraW; });
+      // legenda das siglas desta parte
+      var leg = ch.map(function(si){ var s = g.subs[si]; return s.abbr + ' = ' + s.nome.toLowerCase().replace(/(^|\s)(\S)/g, function(_, a, b){ return a + b.toUpperCase(); }); }).join('   ');
+      var ly = bottom - 12, lx = M, words = pdfSafe(leg).split('   ');
+      words.forEach(function(wd){
+        var ww = F.widthOfTextAtSize(wd + '   ', 6.5);
+        if (lx + ww > W - M){ lx = M; ly -= 9; }
+        if (ly > M + 4) text(pg, wd, lx, ly, 6.5, F, muted);
+        lx += ww;
+      });
+    }
+  });
+  var hoje = new Date(), d = ('0' + hoje.getDate()).slice(-2) + '/' + ('0' + (hoje.getMonth() + 1)).slice(-2) + '/' + hoje.getFullYear();
+  pages.forEach(function(pg, i){
+    text(pg, 'Gerado em ' + d + ' com Boletim em Dia' + (CREDITO.nome ? ' - ' + CREDITO.nome : ''), M, 14, 7, F, muted);
+    var t = 'Página ' + (i + 1) + ' de ' + pages.length; text(pg, t, W - M - F.widthOfTextAtSize(pdfSafe(t), 7), 14, 7, F, muted);
+  });
+  return await doc.save();
+}
+/* ===== CORE END ===== */
+</script>
+
+<script>
+(function(){
+  if (window.pdfjsLib) pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+  var $ = function(id){ return document.getElementById(id); };
+  var DATA = null;
+  var OPT = { cols: [], subjects: [], extras: [], media: 7, escola: '', incParcial: true, resumo: false, evPreset: 'lancadas', sbPreset: 'todas' };
+
+  // créditos
+  $('credits').innerHTML = 'Boletim em Dia · ferramenta gratuita para escolas' + (CREDITO.nome ? ' · Desenvolvido por ' + esc(CREDITO.nome) : '') + (CREDITO.email ? ' · Contato: <a href="mailto:' + CREDITO.email + '">' + CREDITO.email + '</a>' : '');
+
+  function esc(s){ return String(s == null ? '' : s).replace(/[&<>"]/g, function(c){ return { '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;' }[c]; }); }
+  function go(n){
+    [1, 2, 3].forEach(function(i){ $('s' + i).classList.toggle('hidden', i !== n); });
+    document.querySelectorAll('#steps li').forEach(function(li){ var s = +li.dataset.s; li.className = s === n ? 'on' : (s < n ? 'done' : ''); });
+    if (n === 3) renderAll();
+    window.scrollTo(0, 0);
+  }
+  document.querySelectorAll('[data-go]').forEach(function(b){ b.onclick = function(){ go(+b.dataset.go); }; });
+
+  // upload
+  var drop = $('drop'), file = $('file');
+  file.onchange = function(){ if (file.files[0]) handle(file.files[0]); };
+  ['dragenter', 'dragover'].forEach(function(e){ drop.addEventListener(e, function(ev){ ev.preventDefault(); drop.classList.add('over'); }); });
+  ['dragleave', 'drop'].forEach(function(e){ drop.addEventListener(e, function(ev){ ev.preventDefault(); drop.classList.remove('over'); }); });
+  drop.addEventListener('drop', function(ev){ var f = ev.dataTransfer.files[0]; if (f) handle(f); });
+
+  async function handle(f){
+    $('err').classList.add('hidden'); $('progress').classList.remove('hidden');
+    try {
+      if (!window.pdfjsLib) throw new Error('Não consegui carregar o leitor de PDF. Verifique a conexão com a internet e recarregue a página.');
+      var buf = await f.arrayBuffer();
+      var pdf = await pdfjsLib.getDocument({ data: buf }).promise;
+      var pages = [];
+      for (var i = 1; i <= pdf.numPages; i++){
+        var p = await pdf.getPage(i), vp = p.getViewport({ scale: 1 });
+        var tc = await p.getTextContent();
+        pages.push({ height: vp.height, items: tc.items.map(function(it){ var t = it.transform; return { str: it.str, x: t[4], y: t[5], w: it.width, size: Math.hypot(t[2], t[3]) }; }) });
+        $('barfill').style.width = (100 * i / pdf.numPages) + '%';
+        $('progtxt').textContent = 'Lendo página ' + i + ' de ' + pdf.numPages + '…';
+      }
+      var d = parseProesc(pages);
+      if (!d.students.length) throw new Error('Não encontrei nenhum boletim de aluno neste PDF. Ele precisa ser o "Boletim de avaliações da turma" do PROESC, salvo como PDF (não escaneado).');
+      DATA = d; initOpt(); renderConf(); go(2);
+      $('progress').classList.add('hidden'); file.value = '';
+    } catch (e){
+      $('progress').classList.add('hidden');
+      $('err').textContent = e.message || String(e); $('err').classList.remove('hidden');
+      console.error(e);
+    }
+  }
+
+  function renderConf(){
+    var m = DATA.meta;
+    $('turmaInfo').innerHTML = '<b>Turma:</b> ' + esc(m.turma || '?') + (m.periodo ? ' · <b>Boletim:</b> ' + esc(m.periodo) : '') + (m.semestre ? ' · ' + esc(m.semestre) : '');
+    var parciais = DATA.students.filter(function(s){ return s.parcial; }).length;
+    var comAlerta = DATA.students.filter(function(s){ return s.alertas.length; }).length;
+    $('stats').innerHTML = [
+      [DATA.students.length, 'alunos lidos'], [DATA.subjects.length, 'disciplinas'], [DATA.pages, 'páginas no PDF'],
+      [parciais, 'cursam só algumas disciplinas'], [comAlerta + DATA.skipped.length, 'avisos para conferir']
+    ].map(function(s){ return '<div class="stat"><b>' + s[0] + '</b><span>' + s[1] + '</span></div>'; }).join('');
+    var b = '';
+    if (DATA.skipped.length){
+      b += '<div class="banner warn"><b>Atenção: ' + DATA.skipped.length + ' boletim(ns) não entraram na planilha.</b> Confira e lance à mão se precisar:<ul>' +
+        DATA.skipped.map(function(s){ return '<li>Página ' + s.page + (s.nome ? ' – ' + esc(s.nome) : '') + ': ' + esc(s.motivo) + '</li>'; }).join('') + '</ul></div>';
+    }
+    if (comAlerta){
+      b += '<div class="banner warn"><b>' + comAlerta + ' aluno(s) com valores para conferir</b> (marcados na tabela abaixo).</div>';
+    }
+    if (!DATA.skipped.length && !comAlerta) b += '<div class="banner ok">Todos os boletins foram lidos e as faltas conferem com o total impresso em cada boletim.</div>';
+    $('skipBanner').innerHTML = b;
+    var h = '<thead><tr><th class="n">Nº</th><th>Aluno</th><th class="n">Disciplinas</th><th class="n">Total faltas</th><th class="n">% faltas</th><th>Situação</th><th class="n">Pág.</th><th>Observações</th></tr></thead><tbody>';
+    DATA.students.forEach(function(s, i){
+      var obs = '';
+      if (s.parcial) obs += '<span class="badge g">Cursa só ' + Object.keys(s.disciplinas).length + ' disciplina(s)</span>';
+      s.alertas.forEach(function(a){ obs += '<span class="badge w" title="' + esc(a) + '">' + esc(a) + '</span>'; });
+      h += '<tr><td class="n">' + (i + 1) + '</td><td>' + esc(s.nome) + '</td><td class="n">' + Object.keys(s.disciplinas).length + '</td><td class="n">' + (s.totalFaltas ?? '') + '</td><td class="n">' + (s.pctFaltas === null ? '' : fmtNum(s.pctFaltas / 100, 'pct')) + '</td><td>' + esc(s.situacao || '') + '</td><td class="n">' + s.page + '</td><td>' + obs + '</td></tr>';
+    });
+    $('confTable').innerHTML = h + '</tbody>';
+    var np = DATA.students.filter(function(s){ return s.parcial; }).length;
+    $('incParcialTxt').textContent = 'Incluir alunos que cursam só algumas disciplinas (dependência/progressão)' + (np ? ' – ' + np + ' aluno(s) nesta turma' : ' – nenhum nesta turma');
+  }
+
+  // ===== escolhas =====
+  function evPresetCols(id){
+    var C = DATA.columns;
+    if (id === 'lancadas') return C.filter(function(c){ return c.kind === 'nota' && c.temDados; }).map(function(c){ return c.key; });
+    if (id === 'notas') return C.filter(function(c){ return c.kind === 'nota'; }).map(function(c){ return c.key; });
+    if (id === 'notasfaltas') return C.filter(function(c){ return (c.kind === 'nota' && c.temDados) || /total\s*faltas/i.test(c.label); }).map(function(c){ return c.key; });
+    if (id === 'fech') return C.filter(function(c){ return /m[ée]dia final/i.test(c.label) || (c.group && /rec/i.test(c.group) && c.kind === 'nota') || /total\s*faltas/i.test(c.label); }).map(function(c){ return c.key; });
+    if (id === 'faltas') return C.filter(function(c){ return /total\s*faltas/i.test(c.label); }).map(function(c){ return c.key; });
+    return OPT.cols;
+  }
+  var EV_PRESETS = [
+    { id: 'lancadas', t: 'Notas já lançadas', d: 'Só as avaliações que já têm nota no PROESC' },
+    { id: 'notasfaltas', t: 'Notas lançadas + faltas', d: 'Notas já lançadas e o total de faltas de cada disciplina' },
+    { id: 'notas', t: 'Todas as notas', d: 'AV1, AV2, média semestral, recuperação e média final' },
+    { id: 'fech', t: 'Fechamento', d: 'Recuperação, média final e faltas' },
+    { id: 'faltas', t: 'Só faltas', d: 'Total de faltas por disciplina' }
+  ];
+  function sbPresetSubs(id){
+    var S = DATA.subjects;
+    if (id === 'base') return S.filter(function(s){ return s.area !== 'tec'; }).map(function(s){ return s.nome; });
+    if (id === 'tec') return S.filter(function(s){ return s.area === 'tec'; }).map(function(s){ return s.nome; });
+    if (id === 'todas') return S.map(function(s){ return s.nome; });
+    return OPT.subjects;
+  }
+  var SB_PRESETS = [
+    { id: 'todas', t: 'Todas as disciplinas', d: 'A grade completa da turma' },
+    { id: 'base', t: 'Base comum', d: 'Linguagens, Matemática, Natureza e Humanas' },
+    { id: 'tec', t: 'Formação técnica', d: 'Disciplinas técnicas, aplicadas e do itinerário' }
+  ];
+
+  function initOpt(){
+    OPT.evPreset = 'lancadas'; OPT.cols = evPresetCols('lancadas');
+    if (!OPT.cols.length){ OPT.evPreset = 'notas'; OPT.cols = evPresetCols('notas'); }
+    OPT.sbPreset = 'todas'; OPT.subjects = sbPresetSubs('todas');
+    OPT.extras = [];
+  }
+  function sameSet(a, b){ return a.length === b.length && a.every(function(x){ return b.indexOf(x) >= 0; }); }
+  function toggle(arr, v){ var i = arr.indexOf(v); if (i >= 0) arr.splice(i, 1); else arr.push(v); }
+
+  function renderAll(){
+    if (!DATA) return;
+    // presets de avaliação
+    $('evPresets').innerHTML = EV_PRESETS.map(function(p){ var on = sameSet(evPresetCols(p.id), OPT.cols) && OPT.cols.length; return '<button class="preset' + (on ? ' on' : '') + '" data-ev="' + p.id + '"><b>' + p.t + '</b><span>' + p.d + '</span></button>'; }).join('');
+    var groups = {}, order = [];
+    DATA.columns.forEach(function(c){ var g = c.group || 'Resultado'; if (!groups[g]){ groups[g] = []; order.push(g); } groups[g].push(c); });
+    $('evPills').innerHTML = order.map(function(g){
+      return '<div class="pillgroup"><small>' + esc(g) + '</small><div class="pills">' + groups[g].map(function(c){
+        var on = OPT.cols.indexOf(c.key) >= 0;
+        return '<button class="pill' + (on ? ' on' : '') + '" data-col="' + esc(c.key) + '">' + esc(c.label) + (c.temDados ? '' : ' <span class="dim">(vazio)</span>') + '</button>';
+      }).join('') + '</div></div>';
+    }).join('');
+    $('evEmpty').classList.toggle('hidden', OPT.cols.length > 0);
+
+    $('sbPresets').innerHTML = SB_PRESETS.map(function(p){ var on = sameSet(sbPresetSubs(p.id), OPT.subjects) && OPT.subjects.length; return '<button class="preset' + (on ? ' on' : '') + '" data-sb="' + p.id + '"><b>' + p.t + '</b><span>' + p.d + '</span></button>'; }).join('');
+    $('sbPills').innerHTML = AREAS.map(function(A){
+      var subs = DATA.subjects.filter(function(s){ return s.area === A.id; });
+      if (!subs.length) return '';
+      var allOn = subs.every(function(s){ return OPT.subjects.indexOf(s.nome) >= 0; });
+      return '<div class="pillgroup"><small>' + A.nome + '</small><div class="pills"><button class="pill quick' + (allOn ? ' on' : '') + '" data-area="' + A.id + '">' + (allOn ? '✓ ' : '+ ') + 'Toda a área</button>' +
+        subs.map(function(s){ var on = OPT.subjects.indexOf(s.nome) >= 0; return '<button class="pill' + (on ? ' on' : '') + '" data-sub="' + esc(s.nome) + '" title="' + esc(s.nome) + '">' + esc(cap(s.nome)) + '</button>'; }).join('') + '</div></div>';
+    }).join('');
+    $('sbEmpty').classList.toggle('hidden', OPT.subjects.length > 0);
+
+    $('exPills').innerHTML = EXTRAS.map(function(e){ var on = OPT.extras.indexOf(e.id) >= 0; return '<button class="pill' + (on ? ' on' : '') + '" data-ex="' + e.id + '">' + e.label + '</button>'; }).join('');
+
+    var ok = OPT.cols.length && OPT.subjects.length;
+    $('bXlsx').disabled = !ok; $('bPdf').disabled = !ok;
+    renderPreview();
+  }
+  function cap(s){ return s.toLowerCase().replace(/(^|\s)(\S)/g, function(_, a, b){ return a + b.toUpperCase(); }).replace(/\b(Da|De|Do|Das|Dos|E|Em)\b/g, function(w){ return w.toLowerCase(); }); }
+
+  function currentOpt(){
+    var m = parseFloat(String($('media').value).replace(',', '.'));
+    OPT.media = isNaN(m) ? 7 : m;
+    OPT.escola = $('escola').value.trim();
+    OPT.incParcial = $('incParcial').checked; OPT.resumo = $('resumo').checked;
+    return OPT;
+  }
+  function renderPreview(){
+    if (!OPT.cols.length || !OPT.subjects.length){ $('prev').innerHTML = '<div style="padding:16px;color:var(--muted)">Escolha avaliações e disciplinas para ver a prévia.</div>'; return; }
+    var g = buildGrid(DATA, currentOpt());
+    var h = '<table class="t"><thead><tr><th rowspan="2">Aluno</th>';
+    g.subs.forEach(function(s){ h += '<th class="grp" colspan="' + g.cols.length + '" title="' + esc(s.nome) + '">' + esc(s.abbr) + '</th>'; });
+    g.extras.forEach(function(e){ h += '<th class="grp" rowspan="2">' + esc(e.short) + '</th>'; });
+    h += '</tr><tr>';
+    g.subs.forEach(function(){ g.cols.forEach(function(c){ h += '<th class="n">' + esc(shortLabel(c, g.allCols)) + '</th>'; }); });
+    h += '</tr></thead><tbody>';
+    g.rows.forEach(function(r){
+      h += '<tr><td>' + r.n + '. ' + esc(r.nome) + '</td>' + r.cells.map(function(c){ return '<td class="c' + (c.low ? ' low' : '') + '"' + (c.cursa ? '' : ' style="background:#f2f2f2"') + '>' + fmtNum(c.v, c.kind) + '</td>'; }).join('') +
+        r.extras.map(function(e){ return '<td class="c">' + esc(fmtNum(e.v, e.kind)) + '</td>'; }).join('') + '</tr>';
+    });
+    if (g.summary){
+      h += '<tr><th>Média da turma</th>' + g.summary.media.map(function(v){ return '<th class="n">' + (v === null ? '' : fmtNum(v, 'nota')) + '</th>'; }).join('') + g.extras.map(function(){ return '<th></th>'; }).join('') + '</tr>';
+      h += '<tr><th>Abaixo da média (qtd.)</th>' + g.summary.abaixo.map(function(v){ return '<th class="n">' + (v === null ? '' : v) + '</th>'; }).join('') + g.extras.map(function(){ return '<th></th>'; }).join('') + '</tr>';
+    }
+    $('prev').innerHTML = h + '</tbody></table>';
+  }
+
+  document.addEventListener('click', function(ev){
+    var b = ev.target.closest('button'); if (!b || !DATA) return;
+    if (b.dataset.ev){ OPT.cols = evPresetCols(b.dataset.ev); renderAll(); }
+    else if (b.dataset.col){ toggle(OPT.cols, b.dataset.col); OPT.cols = DATA.columns.filter(function(c){ return OPT.cols.indexOf(c.key) >= 0; }).map(function(c){ return c.key; }); renderAll(); }
+    else if (b.dataset.sb){ OPT.subjects = sbPresetSubs(b.dataset.sb); renderAll(); }
+    else if (b.dataset.sub){ toggle(OPT.subjects, b.dataset.sub); renderAll(); }
+    else if (b.dataset.area){
+      var subs = DATA.subjects.filter(function(s){ return s.area === b.dataset.area; }).map(function(s){ return s.nome; });
+      var allOn = subs.every(function(s){ return OPT.subjects.indexOf(s) >= 0; });
+      subs.forEach(function(s){ var i = OPT.subjects.indexOf(s); if (allOn && i >= 0) OPT.subjects.splice(i, 1); if (!allOn && i < 0) OPT.subjects.push(s); });
+      renderAll();
+    }
+    else if (b.dataset.ex){ toggle(OPT.extras, b.dataset.ex); OPT.extras = EXTRAS.filter(function(e){ return OPT.extras.indexOf(e.id) >= 0; }).map(function(e){ return e.id; }); renderAll(); }
+  });
+  ['media', 'escola', 'incParcial', 'resumo'].forEach(function(id){ $(id).addEventListener('input', renderPreview); $(id).addEventListener('change', renderPreview); });
+
+  async function saveFile(name, bytes, mime){
+    try {
+      if (window.claude && typeof window.claude.use === 'function'){
+        var dl = await window.claude.use('downloads');
+        await dl.save({ filename: name, data: new Blob([bytes], { type: mime }) });
+        return;
+      }
+    } catch (e){ console.warn('downloads indisponível, usando download comum', e); }
+    var url = URL.createObjectURL(new Blob([bytes], { type: mime }));
+    var a = document.createElement('a'); a.href = url; a.download = name; document.body.appendChild(a); a.click();
+    setTimeout(function(){ URL.revokeObjectURL(url); a.remove(); }, 1500);
+  }
+  async function exp(kind){
+    var msg = $('expMsg'); msg.textContent = 'Gerando…';
+    try {
+      var o = currentOpt();
+      if (!o.cols.length || !o.subjects.length){ msg.textContent = 'Escolha pelo menos uma avaliação e uma disciplina.'; return; }
+      if (kind === 'xlsx'){ var b = await buildXlsx(DATA, o); await saveFile(fileBase(DATA) + '.xlsx', b, 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'); }
+      else { var p = await buildPdf(DATA, o); await saveFile(fileBase(DATA) + '.pdf', p, 'application/pdf'); }
+      msg.textContent = 'Pronto! Arquivo baixado.';
+    } catch (e){ console.error(e); msg.textContent = 'Erro ao gerar: ' + (e.message || e); }
+  }
+  $('bXlsx').onclick = function(){ exp('xlsx'); };
+  $('bPdf').onclick = function(){ exp('pdf'); };
+})();
+</script>
+
+</body>
+</html>
